@@ -11,6 +11,14 @@ randomPlanetColor = -> "hsl(#{128 + vary(6) - 3}, 52%, #{83 + vary(3)}%)"
 
 sq = (x) -> x * x
 
+plants =
+  binary: BinaryBush
+
+
+planetRadius = 170
+planetWidth = 23
+
+
 class Particle
   constructor: ->
     @x = @y = @vx = @vy = @radius = 0
@@ -81,8 +89,6 @@ class Game extends atom.Game
     @bgcolor = 'hsl(128,52%,83%)'
     ctx.fillStyle = @bgcolor
 
-    @radius = 170
-    @planetWidth = 23
 
     @dudeAngle = 3 * Math.PI / 2
     @dudeSpeed = 0.3
@@ -96,6 +102,13 @@ class Game extends atom.Game
       @other_plant = new BinaryBush
     ]
 
+    # Map from plant name -> number
+    @playerSeeds = {}
+    
+    @groundSeeds = []
+
+    @addSeed BinaryBush, 1, 40
+
     ###
     p = new Particle()
     p.x = 400
@@ -103,6 +116,8 @@ class Game extends atom.Game
     p.vx = p.vy = 10
     @particles.push p
     ###
+
+  addSeed: (type, angle, height) -> @groundSeeds.push new Seed type, angle, height
 
   update: (dt) ->
     @dudeAngle += dt * @dudeSpeed
@@ -123,6 +138,8 @@ class Game extends atom.Game
         i++
 
     i.update(dt) for i in @plants
+
+    seed.update(dt) for seed in @groundSeeds
     #@plant.update dt
 
   draw: ->
@@ -131,8 +148,11 @@ class Game extends atom.Game
 
     @drawBackgroundPlanets()
 
+    seed.drawGround() for seed in @groundSeeds
+
     @drawPlanet()
     @drawDude()
+
 
     @drawPlant(x, p) for p, x in @plants
     
@@ -142,7 +162,7 @@ class Game extends atom.Game
     ctx.save()
     ctx.translate 400, 300
     ctx.rotate rotation
-    ctx.translate 0, @radius+10
+    ctx.translate 0, planetRadius+10
     plant_object.draw()
     ctx.restore()
     
@@ -158,8 +178,8 @@ class Game extends atom.Game
 
   drawPlanet: ->
     ctx.beginPath()
-    ctx.lineWidth = @planetWidth
-    ctx.arc 400, 300, @radius, 0, 2*Math.PI, false
+    ctx.lineWidth = planetWidth
+    ctx.arc 400, 300, planetRadius, 0, 2*Math.PI, false
 
     ctx.strokeStyle = 'black'
     ctx.stroke()
@@ -169,7 +189,7 @@ class Game extends atom.Game
     ctx.translate(400, 300)
     ctx.rotate(@dudeAngle)
     ctx.beginPath()
-    ctx.arc @radius + @planetWidth/2 - 1, 0, 20, Math.PI / 2, 3 * Math.PI / 2, true
+    ctx.arc planetRadius + planetWidth/2 - 1, 0, 20, Math.PI / 2, 3 * Math.PI / 2, true
     ctx.fillStyle = @dudeColor
     ctx.fill()
 

@@ -48,4 +48,5 @@ class BinaryBush extends Plant
     
 BinaryBush.seed =
   color: 'red'
+  name: 'binary'
 
