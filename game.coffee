@@ -34,10 +34,15 @@ class Particle
     ctx.beginPath()
     ctx.arc @x, @y, @radius, 0, 2*Math.PI, false
     color = @color Date.now()
-    #console.log color
-    ctx.fillStyle = color
-    ctx.shadowColor = color
+
+    #ctx.fillStyle = color
+
+    g = ctx.createRadialGradient @x, @y, @radius * 0.9, @x, @y, @radius
+    g.addColorStop 0, color
+    g.addColorStop 1, color, 0
+    ctx.fillStyle = g
     ctx.fill()
+
 
 class BackgroundPlanet extends Particle
   init: (isStart) ->
@@ -57,7 +62,7 @@ class BackgroundPlanet extends Particle
   constructor: (isStart) ->
     @init isStart
 
-  color: (time) -> "hsla(#{@h},#{@s}%,#{@l}%,#{@alpha time})"
+  color: (time, amul=1) -> "hsla(#{@h},#{@s}%,#{@l}%,#{amul * @alpha time})"
 
   update: (dt) ->
     super(dt)
@@ -88,11 +93,13 @@ class Game extends atom.Game
 
     @plant = new CircuitTree
 
+    ###
     p = new Particle()
     p.x = 400
     p.y = 300
     p.vx = p.vy = 10
     @particles.push p
+    ###
 
   update: (dt) ->
     @dudeAngle += dt * @dudeSpeed
@@ -123,12 +130,12 @@ class Game extends atom.Game
     @drawPlanet()
     @drawDude()
 
-    ctx.save()
-    ctx.translate 400, 300
-    ctx.rotate 2
-    ctx.translate 0, @radius+10
-    @plant.draw()
-    ctx.restore()
+    #ctx.save()
+    #ctx.translate 400, 300
+    #ctx.rotate 2
+    #ctx.translate 0, @radius+10
+    #@plant.draw()
+    #ctx.restore()
 
     @drawParticles()
 
@@ -137,9 +144,6 @@ class Game extends atom.Game
     ctx.shadowOffsetY = 0
     ctx.shadowBlur = 8
     p.draw() for p in @backgroundPlanets
-
-    ctx.shadowBlur = 0
-    ctx.shadowColor = 'transparent'
 
   drawPlanet: ->
     ctx.beginPath()
