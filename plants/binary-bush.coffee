@@ -2,7 +2,9 @@ class BinaryBush extends Plant
   constructor: (seed) ->
     super seed
     @depth = 7
-    @duration = 90 # seconds
+    @duration = 10 # seconds
+    @tau = Math.PI * 2
+    
   update: (dt) ->
     super dt
     @current_depth = @depth * (1 + Math.sin(@age / @duration * Math.PI)) / 2
@@ -11,7 +13,6 @@ class BinaryBush extends Plant
   drawBranch: (depth) ->
     # draws a single branch, then branches again, until depth is exhausted
     return unless depth > 0
-    tau = Math.PI * 2
     
     ctx = atom.ctx
     ctx.fillStyle = GameColors.stalk
@@ -29,13 +30,13 @@ class BinaryBush extends Plant
     
     ctx.save();
     ctx.translate 0, branch_length
-    ctx.rotate(tau / 8)
+    ctx.rotate(@tau / 8)
     @drawBranch depth - 1
     ctx.restore();
   
     ctx.save();
     ctx.translate 0, branch_length
-    ctx.rotate(-(tau / 8))
+    ctx.rotate(-(@tau / 8))
     @drawBranch depth - 1
     ctx.restore()
     
@@ -43,7 +44,8 @@ class BinaryBush extends Plant
     ctx = atom.ctx
     ctx.fillStyle = 'red'
     ctx.beginPath()
-    ctx.arc 0, 0, 0, 0, false
+    ctx.arc 0, 0, 0, @tau, false
+    ctx.closePath()
     ctx.fill()
     
 BinaryBush.seed =
