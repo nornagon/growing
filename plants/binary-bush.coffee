@@ -49,6 +49,6 @@ class BinaryBush extends Plant
     ctx.fill()
     
 BinaryBush.seed =
-  color: 'red'
+  color: 'blue'
   name: 'binary'
 

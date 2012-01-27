@@ -1,4 +1,4 @@
-seedRadius = 6
+seedRadius = 4
 fallSpeed = 10
 
 class Seed
@@ -19,4 +19,4 @@ class Seed
     ctx.restore()
 
   update: (dt) ->
-    @height = Math.max(0, @height - dt * fallSpeed)
+    @height = Math.max(2, @height - dt * fallSpeed)
