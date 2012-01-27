@@ -89,7 +89,7 @@ class Game extends atom.Game
 
     @dudeHead = 25
     @dudeFeet = 5
-    @dudeColor = 'red'
+    @dudeColor = 'white'
     
     @plants = [
       @plant = new CircuitTree
@@ -169,11 +169,9 @@ class Game extends atom.Game
     ctx.translate(400, 300)
     ctx.rotate(@dudeAngle)
     ctx.beginPath()
-    ctx.moveTo @radius + @dudeFeet, 0
-    ctx.lineTo @radius + @dudeHead, 0
-    ctx.strokeStyle = @dudeColor
-    ctx.lineWidth = 5
-    ctx.stroke()
+    ctx.arc @radius + @planetWidth/2 - 1, 0, 20, Math.PI / 2, 3 * Math.PI / 2, true
+    ctx.fillStyle = @dudeColor
+    ctx.fill()
 
     ctx.restore()
 
