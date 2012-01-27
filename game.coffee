@@ -39,6 +39,8 @@ class Game extends atom.Game
     @dudeFeet = 5
     @dudeColor = 'red'
 
+    @plant = new CircuitTree
+
   update: (dt) ->
     @dudeAngle += dt * @dudeSpeed
     @dudeAngle %= 2*Math.PI
@@ -46,6 +48,7 @@ class Game extends atom.Game
     for p in @backgroundPlanets
       p.x += dt * p.vx
       p.y += dt * p.vy
+    @plant.update dt
 
 #      unless -p.radius < p.x < 800+p.radius and -p.radius < p.y < 600+p.radius
 
@@ -56,6 +59,12 @@ class Game extends atom.Game
     @drawPlanet()
     @drawDude()
 
+    ctx.save()
+    ctx.translate 400, 300
+    ctx.rotate 2
+    ctx.translate 0, @radius+10
+    @plant.draw()
+    ctx.restore()
 
   drawBackground: ->
     ctx.fillStyle = 'rgb(174,231,191)'

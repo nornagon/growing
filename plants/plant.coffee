@@ -11,13 +11,11 @@
 #  - time - current time in seconds - basically; e.g. (Date.now() / 1000)
 
 class Plant
-  constructor: (game, atom, seed)->
-    @game = game
-    @atom = atom
-    @seed = seed
-    
-  update: ->
-  draw: (growth_cycle, now_time)->
+  constructor: (@seed) ->
+    @age = 0
+  update: (dt) ->
+    @age += dt
+  draw: ->
     ctx = @atom.ctx
     ctx.beginPath();
     ctx.fillColor = 'black'

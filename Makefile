@@ -1,4 +1,4 @@
 .PHONY: all
 
 all:
-	coffee -cw *.coffee
+	coffee -cbw *.coffee
