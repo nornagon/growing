@@ -2,12 +2,11 @@ class BinaryBush extends Plant
   constructor: (seed) ->
     super seed
     @depth = 7
-    @duration = 10 # seconds
+    @duration = 90 # seconds
   update: (dt) ->
     super dt
     @current_depth = @depth * (1 + Math.sin(@age / @duration * Math.PI)) / 2
   draw: ->
-    console.log @age, @duration
     @drawBranch(@current_depth) # if @age < @duration
   drawBranch: (depth) ->
     # draws a single branch, then branches again, until depth is exhausted
