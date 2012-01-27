@@ -17,6 +17,7 @@ class Particle
     @start = Date.now()
     @radius = 10
     @end = @start + 10 * 1000
+    @fuzzy = 1000
 
   alpha: (time) ->
     dist = @end - @start
@@ -36,10 +37,10 @@ class Particle
     color = @color Date.now()
 
     #ctx.fillStyle = color
-
     g = ctx.createRadialGradient @x, @y, @radius * 0.9, @x, @y, @radius
-    g.addColorStop 0, color
-    g.addColorStop 1, color, 0
+    g.addColorStop(0, color)
+    g.addColorStop(1 - Math.min(0.95, @fuzzy / @radius), color)
+    g.addColorStop(1, color.split(',').slice(0, 3).join(',') + ', 0.0)') # worst thing ever, to replace alpha part with 0.0
     ctx.fillStyle = g
     ctx.fill()
 
@@ -60,9 +61,11 @@ class BackgroundPlanet extends Particle
     @l = 83 + vary(3)
 
   constructor: (isStart) ->
+    super()
     @init isStart
 
   color: (time, amul=1) -> "hsla(#{@h},#{@s}%,#{@l}%,#{amul * @alpha time})"
+  #color: (a, b) -> "rgba(0, 0, 0, 1.0)"
 
   update: (dt) ->
     super(dt)
