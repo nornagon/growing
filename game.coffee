@@ -2,7 +2,9 @@
 canvas = atom.canvas
 ctx = atom.ctx
 
-randomPlanetColor = -> "hsl(#{128 + Math.floor(Math.random() * 3)},52%,#{83 + Math.floor(Math.random() * 3)}%)"
+vary = (amt) -> 2 * amt * (Math.random() - 0.5)
+
+randomPlanetColor = -> "hsl(#{128 + vary(5)}, 52%, #{83 + vary(4)}%)"
 #randomPlanetColor = -> 'black'
 
 sq = (x) -> x * x
@@ -24,7 +26,8 @@ class Game extends atom.Game
         vx:sq(Math.random() * 6) - 18
         vy:sq(Math.random() * 6) - 18
 
-    ctx.fillStyle = 'hsl(128,52%,83%)'
+    @bgcolor = 'hsl(128,52%,83%)'
+    ctx.fillStyle = @bgcolor
 
     @radius = 170
     @planetWidth = 23
@@ -44,6 +47,9 @@ class Game extends atom.Game
       p.x += dt * p.vx
       p.y += dt * p.vy
 
+#      unless -p.radius < p.x < 800+p.radius and -p.radius < p.y < 600+p.radius
+
+
   draw: ->
     @drawBackground()
 
@@ -59,7 +65,6 @@ class Game extends atom.Game
       ctx.beginPath()
       ctx.arc p.x, p.y, p.radius, 0, 2*Math.PI, false
       ctx.fillStyle = p.color
-      console.log  p.color
       ctx.fill()
 
 
