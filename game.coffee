@@ -135,9 +135,9 @@ class Game extends atom.Game
     @drawDude()
 
     @drawPlant(x, p) for p, x in @plants
-    # @drawPlant 2, @plant
-    # @drawPlant 3, @other_plant
     
+    @drawParticles()
+
   drawPlant: (rotation, plant_object) ->
     ctx.save()
     ctx.translate 400, 300
@@ -149,15 +149,6 @@ class Game extends atom.Game
   drawBackground: ->
     ctx.fillStyle = 'rgb(174,231,191)'
     ctx.fillRect 0, 0, 800, 600
-
-    #ctx.save()
-    #ctx.translate 400, 300
-    #ctx.rotate 2
-    #ctx.translate 0, @radius+10
-    #@plant.draw()
-    #ctx.restore()
-
-    @drawParticles()
 
   drawBackgroundPlanets: ->
     ctx.shadowOffsetX = 0
