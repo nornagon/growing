@@ -49,8 +49,8 @@ atom.input = {
       e.preventDefault()
 }
 
-document.onkeydown = atom.input.onkeydown.bind(atom.input)
-document.onkeyup = atom.input.onkeyup.bind(atom.input)
+document.onkeydown = (args...) -> atom.input.onkeydown args...
+document.onkeyup = (args...) -> atom.input.onkeyup args...
 
 atom.button =
   LEFT: -1
