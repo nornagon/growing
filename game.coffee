@@ -67,6 +67,7 @@ class Game extends atom.Game
     @dudeColor = 'red'
 
     @plant = new CircuitTree
+    @other_plant = new BinaryBush
 
   update: (dt) ->
     @dudeAngle += dt * @dudeSpeed
@@ -82,13 +83,17 @@ class Game extends atom.Game
     @drawPlanet()
     @drawDude()
 
+    @drawPlant 2, @plant
+    @drawPlant 3, @other_plant
+    
+  drawPlant: (rotation, plant_object) ->
     ctx.save()
     ctx.translate 400, 300
-    ctx.rotate 2
+    ctx.rotate rotation
     ctx.translate 0, @radius+10
-    @plant.draw()
+    plant_object.draw()
     ctx.restore()
-
+    
   drawBackground: ->
     ctx.fillStyle = 'rgb(174,231,191)'
     ctx.fillRect 0, 0, 800, 600
