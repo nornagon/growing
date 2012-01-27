@@ -46,3 +46,6 @@ class BinaryBush extends Plant
     ctx.arc 0, 0, 0, 0, false
     ctx.fill()
     
+BinaryBush.seed =
+  color: 'red'
+
