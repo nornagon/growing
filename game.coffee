@@ -64,20 +64,31 @@ class BackgroundPlanet extends Particle
     @start -= randInt(30 * 1000) if isStart
     @end = Date.now() + 20 * 1000 + randInt(30 * 1000)
 
-    @h = 128 - rand(6)
-    @s = 52
-    @l = 83 + vary(3)
+    @h = vary(6)
+    @s = 54 + vary(4)
+    @l = 79 + vary(5)
 
   constructor: (isStart) ->
     super()
     @init isStart
 
-  color: (time, amul=1) -> "hsla(#{@h},#{@s}%,#{@l}%,#{amul * @alpha time})"
-  #color: (a, b) -> "rgba(0, 0, 0, 1.0)"
+  color: (hue, time, amul=1) -> "hsla(#{hue},#{@s}%,#{@l}%,#{amul * @alpha time})"
 
   update: (dt) ->
     super(dt)
     @init() if Date.now() > @end
+
+  draw: (bgHue) ->
+    ctx.beginPath()
+    ctx.arc @x, @y, @radius, 0, 2*Math.PI, false
+    hue = @h + bgHue
+
+    g = ctx.createRadialGradient @x, @y, @radius * 0.9, @x, @y, @radius
+    color = @color hue, Date.now()
+    g.addColorStop 0, color
+    g.addColorStop 1, @color hue, Date.now(), 0
+    ctx.fillStyle = g
+    ctx.fill()
 
 class Game extends atom.Game
   constructor: ->
@@ -89,8 +100,7 @@ class Game extends atom.Game
     @backgroundPlanets = (new BackgroundPlanet(true) for [1..15])
     @particles = []
 
-    @bgcolor = 'hsl(128,52%,83%)'
-    ctx.fillStyle = @bgcolor
+    @backgroundHue = 138
 
 
     @dudeAngle = 3 * Math.PI / 2
@@ -143,13 +153,11 @@ class Game extends atom.Game
     i.update(dt) for i in @plants
 
     seed.update(dt) for seed in @groundSeeds
+    @backgroundHue += 1*dt
     #@plant.update dt
 
   draw: ->
-    ctx.fillStyle = 'rgb(174,231,191)'
-    ctx.fillRect 0, 0, 800, 600
-
-    @drawBackgroundPlanets()
+    @drawBackground()
 
     seed.drawGround() for seed in @groundSeeds
 
@@ -170,14 +178,12 @@ class Game extends atom.Game
     ctx.restore()
     
   drawBackground: ->
-    ctx.fillStyle = 'rgb(174,231,191)'
+    ctx.fillStyle = "hsl(#{@backgroundHue},54%,76%)"
     ctx.fillRect 0, 0, 800, 600
+    @drawBackgroundPlanets()
 
   drawBackgroundPlanets: ->
-    ctx.shadowOffsetX = 0
-    ctx.shadowOffsetY = 0
-    ctx.shadowBlur = 8
-    p.draw() for p in @backgroundPlanets
+    p.draw(@backgroundHue) for p in @backgroundPlanets
 
   drawPlanet: ->
     ctx.beginPath()
