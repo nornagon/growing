@@ -1,7 +1,7 @@
 class BinaryBush extends Plant
   constructor: (seed) ->
     super seed
-    @depth = 5
+    @depth = 5 
   update: (dt) ->
     super dt
   draw: ->
@@ -15,22 +15,31 @@ class BinaryBush extends Plant
     ctx.fillStyle = GameColors.stalk
     ctx.lineWidth = depth
     ctx.beginPath()
-    base_width = depth / 5
+    base_width = depth / 2
+    top_width = depth / 3
+    branch_length = depth * 6
     ctx.moveTo -base_width, 0
     ctx.lineTo base_width, 0
-    ctx.lineTo 0, depth * 10
+    ctx.lineTo top_width, branch_length
+    ctx.lineTo -top_width, branch_length
     ctx.closePath()
     ctx.fill()
     
-    ctx.translate 0, depth * 10
+    ctx.save();
+    ctx.translate 0, branch_length
     ctx.rotate(tau / 8)
     @drawBranch depth - 1
-    ctx.rotate(tau / 4)
+    ctx.restore();
+    
+    ctx.save();
+    ctx.translate 0, branch_length
+    ctx.rotate(-(tau / 8))
     @drawBranch depth - 1
+    ctx.restore()
   drawFruit: ->
     ctx = atom.ctx
     ctx.fillStyle = 'red'
     ctx.beginPath()
     ctx.arc 0, 0, 0, 0, false
-    ctx.fill
+    ctx.fill()
     
