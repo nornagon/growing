@@ -35,7 +35,7 @@ class BackgroundPlanet
     
     Math.sin ((Date.now() - @start) / dist * Math.PI)
 
-  color: (time) -> "hsla(#{@h},#{@s}%,#{@l}%,#{@alpha time})"
+  color: (time, amul=1) -> "hsla(#{@h},#{@s}%,#{@l}%,#{amul * @alpha time})"
 
   update: (dt) ->
     @x += dt * @vx
@@ -82,29 +82,28 @@ class Game extends atom.Game
     @drawPlanet()
     @drawDude()
 
-    ctx.save()
-    ctx.translate 400, 300
-    ctx.rotate 2
-    ctx.translate 0, @radius+10
-    @plant.draw()
-    ctx.restore()
+    #ctx.save()
+    #ctx.translate 400, 300
+    #ctx.rotate 2
+    #ctx.translate 0, @radius+10
+    #@plant.draw()
+    #ctx.restore()
 
   drawBackground: ->
     ctx.fillStyle = 'rgb(174,231,191)'
     ctx.fillRect 0, 0, 800, 600
 
-    ctx.shadowOffsetX = 0
-    ctx.shadowOffsetY = 0
-    ctx.shadowBlur = 8
-    ctx.fillStyle = 'transparent'
     now = Date.now()
     for p in @backgroundPlanets
       ctx.beginPath()
       ctx.arc p.x, p.y, p.radius, 0, 2*Math.PI, false
       color = p.color now
-      ctx.fillStyle = color
-      ctx.shadowColor = color
+      g = ctx.createRadialGradient(p.x, p.y, p.radius * 0.9, p.x, p.y, p.radius)
+      g.addColorStop 0, color
+      g.addColorStop 1, p.color now, 0
+      ctx.fillStyle = g
       ctx.fill()
+    return
 
 
   drawPlanet: ->
