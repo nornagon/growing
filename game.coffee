@@ -3,11 +3,46 @@ canvas = atom.canvas
 ctx = atom.ctx
 
 vary = (amt) -> 2 * amt * (Math.random() - 0.5)
+rand = (amt) -> amt * Math.random()
+randInt = (amt) -> Math.floor rand(amt)
 
-randomPlanetColor = -> "hsl(#{128 + vary(5)}, 52%, #{83 + vary(4)}%)"
+randomPlanetColor = -> "hsl(#{128 + vary(6) - 3}, 52%, #{83 + vary(3)}%)"
 #randomPlanetColor = -> 'black'
 
 sq = (x) -> x * x
+
+class BackgroundPlanet
+  init: (isStart) ->
+    @x = Math.random() * 800
+    @y = Math.random() * 600
+    @radius = sq(rand 13)
+    @vx = vary(5)
+    @vy = vary(5)
+    @start = Date.now()
+    @start -= randInt(10 * 1000) if isStart
+    @end = Date.now() + 20 * 1000 + randInt(30 * 1000)
+
+    @h = 128 - rand(6)
+    @s = 52
+    @l = 83 + vary(3)
+
+  constructor: (isStart) ->
+    @init isStart
+
+  alpha: (time) ->
+    dist = @end - @start
+    return 0 if time >= @end
+    
+    Math.sin ((Date.now() - @start) / dist * Math.PI)
+
+  color: (time) -> "hsla(#{@h},#{@s}%,#{@l}%,#{@alpha time})"
+
+  update: (dt) ->
+    @x += dt * @vx
+    @y += dt * @vy
+
+    @init() if Date.now() > @end
+
 
 class Game extends atom.Game
   constructor: ->
@@ -16,15 +51,7 @@ class Game extends atom.Game
     canvas.width = 800
     canvas.height = 600
 
-    @backgroundPlanets = []
-    for [1..5]
-      @backgroundPlanets.push
-        x:Math.random() * 800
-        y:Math.random() * 600
-        radius:Math.random() * 200
-        color:randomPlanetColor()
-        vx:sq(Math.random() * 6) - 18
-        vy:sq(Math.random() * 6) - 18
+    @backgroundPlanets = (new BackgroundPlanet(true) for [1..15])
 
     @bgcolor = 'hsl(128,52%,83%)'
     ctx.fillStyle = @bgcolor
@@ -43,12 +70,7 @@ class Game extends atom.Game
     @dudeAngle += dt * @dudeSpeed
     @dudeAngle %= 2*Math.PI
 
-    for p in @backgroundPlanets
-      p.x += dt * p.vx
-      p.y += dt * p.vy
-
-#      unless -p.radius < p.x < 800+p.radius and -p.radius < p.y < 600+p.radius
-
+    p.update(dt) for p in @backgroundPlanets
 
   draw: ->
     @drawBackground()
@@ -61,10 +83,17 @@ class Game extends atom.Game
     ctx.fillStyle = 'rgb(174,231,191)'
     ctx.fillRect 0, 0, 800, 600
 
+    ctx.shadowOffsetX = 0
+    ctx.shadowOffsetY = 0
+    ctx.shadowBlur = 8
+    ctx.fillStyle = 'transparent'
+    now = Date.now()
     for p in @backgroundPlanets
       ctx.beginPath()
       ctx.arc p.x, p.y, p.radius, 0, 2*Math.PI, false
-      ctx.fillStyle = p.color
+      color = p.color now
+      ctx.fillStyle = color
+      ctx.shadowColor = color
       ctx.fill()
 
 
