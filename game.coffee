@@ -90,9 +90,11 @@ class Game extends atom.Game
     @dudeHead = 25
     @dudeFeet = 5
     @dudeColor = 'red'
-
-    @plant = new CircuitTree
-    @other_plant = new BinaryBush
+    
+    @plants = [
+      @plant = new CircuitTree
+      @other_plant = new BinaryBush
+    ]
 
     ###
     p = new Particle()
@@ -120,7 +122,8 @@ class Game extends atom.Game
       else
         i++
 
-    @plant.update dt
+    i.update(dt) for i in @plants
+    #@plant.update dt
 
   draw: ->
     ctx.fillStyle = 'rgb(174,231,191)'
@@ -131,9 +134,9 @@ class Game extends atom.Game
     @drawPlanet()
     @drawDude()
 
-<<<<<<< HEAD
-    @drawPlant 2, @plant
-    @drawPlant 3, @other_plant
+    @drawPlant(x, p) for p, x in @plants
+    # @drawPlant 2, @plant
+    # @drawPlant 3, @other_plant
     
   drawPlant: (rotation, plant_object) ->
     ctx.save()
@@ -146,7 +149,7 @@ class Game extends atom.Game
   drawBackground: ->
     ctx.fillStyle = 'rgb(174,231,191)'
     ctx.fillRect 0, 0, 800, 600
-=======
+
     #ctx.save()
     #ctx.translate 400, 300
     #ctx.rotate 2
@@ -155,7 +158,6 @@ class Game extends atom.Game
     #ctx.restore()
 
     @drawParticles()
->>>>>>> 733e9c40032c3d796880f0c2d060c4f648ea2542
 
   drawBackgroundPlanets: ->
     ctx.shadowOffsetX = 0
