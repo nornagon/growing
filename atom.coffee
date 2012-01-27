@@ -1,3 +1,7 @@
+Function.prototype.bind ?= (new_this) ->
+  => @apply new_this, arguments
+
+
 window.atom = atom = {}
 atom.input = {
   _bindings: {}

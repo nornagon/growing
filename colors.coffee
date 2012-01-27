@@ -1,5 +1,5 @@
 # standard colours used in this game
-Game.colors =
+GameColors =
   stalk: 'black'
   roots: 'black'
   planet_edge: 'black'
