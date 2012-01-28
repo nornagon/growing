@@ -107,7 +107,7 @@ class Game extends atom.Game
 
     @dudeLocation = 3 * Math.PI / 2
     @dudeAngle = 0
-    @dudeSpeed = 0.3
+    @dudeSpeed = 0.16
 
     @dudeHead = 25
     @dudeFeet = 5
@@ -212,7 +212,7 @@ class Game extends atom.Game
     ctx.save()
     ctx.translate(400, 300)
     ctx.rotate @dudeLocation
-    ctx.translate planetRadius + planetWidth/2 + 13 + Math.sin(@dudeAngle) * 6, 0
+    ctx.translate planetRadius + planetWidth/2 + 15 + Math.sin(@dudeAngle) * 2, 0
     #ctx.rotate @dudeAngle
 
     ctx.drawImage avatar, -16, -16
