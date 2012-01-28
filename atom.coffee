@@ -90,9 +90,9 @@ eventCode = (e) ->
       atom.button.WHEELDOWN
 
 atom.canvas = document.getElementsByTagName('canvas')[0]
-atom.canvas.style.position = "absolute"
-atom.canvas.style.top = "0"
-atom.canvas.style.left = "0"
+#atom.canvas.style.position = "absolute"
+#atom.canvas.style.top = "0"
+#atom.canvas.style.left = "0"
 atom.ctx = atom.canvas.getContext '2d'
 #atom.gl = atom.canvas.getContext 'experimental-webgl'
 
