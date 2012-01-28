@@ -13,11 +13,30 @@
 class Plant
   constructor: (@seed, @angle) ->
     @age = 0
+    @duration = 360 # seconds - default - contains both birth and life, but not death
+    @birth_duration = 90 # seconds
+    @death_duration = 90 # seconds
   update: (dt) ->
     @age += dt
   draw: ->
     ctx = @atom.ctx
     ctx.beginPath()
     ctx.fillColor = 'black'
+  stage: -> # returns current stage - 'birth', 'life', 'death'
+    if @age > @duration
+      'death'
+    else if @age < @birth_duration
+      'birth'
+    else
+      'life'
+    
+  stage_progress: -> # returns number 0-1.0 indicating progress through current stage
+    stage = @stage()
+    if stage == 'birth'
+      @age / @birth_duration
+    else if stage == 'life'
+      (@age - @birth_duration) / (@duration - @birth_duration)
+    else if stage == 'death'
+      @age - @duration / @death_duration
     
     
