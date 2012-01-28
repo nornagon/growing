@@ -1,6 +1,6 @@
 class BinaryBush extends Plant
-  constructor: (seed) ->
-    super seed
+  constructor: (seed, angle) ->
+    super seed, angle
     @depth = 7
     @duration = 10 # seconds
     @tau = Math.PI * 2
@@ -50,5 +50,5 @@ class BinaryBush extends Plant
     
 BinaryBush.seed =
   hueOffset: 60
-  name: 'binary'
+  germinationTime: 4
 

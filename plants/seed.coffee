@@ -7,21 +7,21 @@ class Seed
     @seed = randInt(1000)
     @alpha = 1
 
-    # State = 'falling' -> 'resting' -> 'lifting'
+    # State = 'falling' -> 'resting' -> 'lifting' -> 'held' -> 'planting' -> 'germination' -> 'fading'
     @state = 'falling'
     #new @type
     #@type.seed.color
 
   color: -> "hsla(#{@type.seed.hueOffset},54%,79%,#{@alpha})"
 
-  drawGround: ->
+  draw: ->
     return if @state is 'done'
 
     ctx.save()
     ctx.translate 400, 300
     ctx.rotate @angle
     ctx.beginPath()
-    ctx.arc planetRadius + planetWidth / 2 + @height, 0, seedRadius, 0, 2*Math.PI, false
+    ctx.arc 0, planetRadius + planetWidth / 2 + @height, seedRadius, 0, 2*Math.PI, false
     ctx.fillStyle = @color()
     ctx.fill()
 
@@ -33,18 +33,39 @@ class Seed
 
   update: (dt) ->
     switch @state
-      when 'falling'
+      when 'falling', 'planting'
         @height -= dt * fallSpeed
         if @height <= groundHeight
-          @height = groundHeight
-          @state = 'resting'
+          if @state is 'falling'
+            @height = groundHeight
+            @state = 'resting'
+          else
+            @state = 'germination'
+            @gtime = @type.seed.germinationTime
+
+      when 'germination'
+        @gtime -= dt
+        if @gtime <= 0
+          @state = 'fading'
 
       when 'lifting'
         @height += dt * 20
         @alpha -= dt * 1 * 0.3
         if @alpha <= 0
+          @state = 'held'
+
+      when 'fading'
+        @alpha -= dt * 0.5
+        if @alpha <= 0
           @state = 'done'
+          game.plants.push new @type(@seed, @angle)
+
 
   collect: ->
     @state = 'lifting'
+
+  plant: (@angle) ->
+    @state = 'planting'
+    @height = 20
+    @alpha = 1
 

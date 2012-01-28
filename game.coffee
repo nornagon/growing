@@ -11,9 +11,7 @@ randomPlanetColor = -> "hsl(#{128 + vary(6) - 3}, 52%, #{83 + vary(3)}%)"
 
 sq = (x) -> x * x
 
-plants =
-  binary: BinaryBush
-
+plants = {BinaryBush}
 
 planetRadius = 170
 planetWidth = 23
@@ -105,7 +103,7 @@ class Game extends atom.Game
     @backgroundHue = 138
 
 
-    @dudeLocation = 3 * Math.PI / 2
+    @dudeLocation = Math.PI
     @dudeAngle = 0
     @dudeSpeed = 0.16
 
@@ -113,17 +111,17 @@ class Game extends atom.Game
     @dudeFeet = 5
     @dudeColor = 'white'
     
-    @plants = [
-      @plant = new CircuitTree
-      @other_plant = new BinaryBush
-    ]
+    @plants = []
 
-    # Map from plant name -> number
+    # Map from plant name -> list of seeds
     @playerSeeds = {}
+#      BinaryBush:[new Seed BinaryBush, 0, 0]
+
+    @selectedPlant = 'BinaryBush'
     
     @groundSeeds = []
 
-    @addSeed BinaryBush, 1, 40
+    @addSeed BinaryBush, 0, 40
 
     ###
     p = new Particle()
@@ -161,9 +159,20 @@ class Game extends atom.Game
       seed.update(dt)
       if seed.state is 'resting' and Math.abs(seed.angle - @dudeLocation) < 0.06
         seed.collect()
+        @playerSeeds[seed.type.name] ?= []
+        @playerSeeds[seed.type.name].push seed
 
     @backgroundHue += 1*dt
     #@plant.update dt
+    
+    @plant() if atom.input.pressed 'hi'
+
+  plant: ->
+    return unless @playerSeeds[@selectedPlant]?.length
+
+    seed = @playerSeeds[@selectedPlant].pop()
+    seed.plant @dudeLocation
+    @groundSeeds.push seed
 
   draw: ->
     @drawBackground()
@@ -171,18 +180,18 @@ class Game extends atom.Game
     @drawPlanet()
     @drawDude()
 
-    seed.drawGround() for seed in @groundSeeds
+    seed.draw() for seed in @groundSeeds
 
-    @drawPlant(x, p) for p, x in @plants
+    @drawPlant p for p, x in @plants
     
     @drawParticles()
 
-  drawPlant: (rotation, plant_object) ->
+  drawPlant: (plant) ->
     ctx.save()
     ctx.translate 400, 300
-    ctx.rotate rotation
+    ctx.rotate plant.angle
     ctx.translate 0, planetRadius+10
-    plant_object.draw()
+    plant.draw()
     ctx.restore()
     
   drawBackground: ->
@@ -201,22 +210,11 @@ class Game extends atom.Game
     ctx.strokeStyle = 'black'
     ctx.stroke()
 
-  drawDude2: ->
-    ctx.save()
-    ctx.translate(400, 300)
-    ctx.rotate(@dudeLocation)
-    ctx.beginPath()
-    ctx.arc planetRadius + planetWidth/2 - 1, 0, 20, Math.PI / 2, 3 * Math.PI / 2, true
-    ctx.fillStyle = @dudeColor
-    ctx.fill()
-
-    ctx.restore()
-
   drawDude: ->
     ctx.save()
-    ctx.translate(400, 300)
+    ctx.translate 400, 300
     ctx.rotate @dudeLocation
-    ctx.translate planetRadius + planetWidth/2 + 15 + Math.sin(@dudeAngle) * 2, 0
+    ctx.translate 0, planetRadius + planetWidth/2 + 15 + Math.sin(@dudeAngle) * 2
     ctx.rotate @dudeLocation * 1.4
 
     ctx.drawImage avatar, -16, -16
@@ -228,4 +226,6 @@ class Game extends atom.Game
 
 game = new Game()
 game.run()
+
+atom.input.bind atom.key.SPACE, 'hi'
 
