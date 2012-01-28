@@ -53,7 +53,7 @@ class Curlicure extends Plant
 
   update: (dt) ->
     super dt
-    for c in @components
+    for c,i in @components
       if c.age < c.maxAge
         c.age = Math.min c.maxAge, c.age + c.growthRate * dt
       if @stage() == 'life' and !c.seed? and c.age > c.maxAge * 0.8 and Math.random() < 0.1*dt
@@ -62,9 +62,12 @@ class Curlicure extends Plant
         c.seed = undefined
       if c.seed? and c.seed < 2
         c.seed += 0.5 * dt
-      if c.seed >= 2 and Math.random() < 0.1*dt
-        age = c.stage()/c.maxAge
-        endPoint = c.curl.pointAt age, age
+
+      age = c.stage()/c.maxAge
+      endPoint = c.curl.pointAt age, age
+      treePos = { x: c.posX + endPoint.x, y: endPoint.y }
+      if c.seed >= 1 and atom.input.pressed('grab') and dist(atom.input.mouse, treePos2Canvas(@angle, treePos.x, treePos.y)) < 10
+        console.log("hi!")
         [d, theta] = treePos2Polar @angle, c.posX + endPoint.x, endPoint.y
         game.addSeed Curlicure, theta, d-planetRadius
         c.seed = -20*rand(10)
@@ -96,7 +99,12 @@ class Curlicure extends Plant
     if c.seed? and c.seed > 0
       ctx.beginPath()
       ctx.arc p.x, p.y, c.seed, 0, Math.PI*2
+      endPoint = c.curl.pointAt age/c.maxAge, age/c.maxAge
+      treePos = { x: c.posX + endPoint.x, y: endPoint.y }
+      d = dist(atom.input.mouse, treePos2Canvas(@angle, treePos.x, treePos.y))
       ctx.fillStyle = 'red'
+      if d < 10
+        ctx.fillStyle = 'hsl(0,100%,80%)'
       ctx.fill()
     ctx.restore()
       
