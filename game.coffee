@@ -144,6 +144,8 @@ class Game extends atom.Game
     @groundSeeds = []
 
     @addSeed BinaryBush, 5, 40
+    
+    @radialSelector = new RadialSelector
 
     ###
     p = new Particle()
@@ -187,6 +189,8 @@ class Game extends atom.Game
     @backgroundHue += 1*dt
     #@plant.update dt
     
+    @radialSelector.update()
+    
     @plant() if atom.input.pressed 'hi'
 
   plant: ->
@@ -207,6 +211,11 @@ class Game extends atom.Game
     @drawPlant p for p, x in @plants
     
     @drawParticles()
+    
+    atom.ctx.save()
+    atom.ctx.translate(atom.canvas.width / 2, atom.canvas.height / 2)
+    @radialSelector.draw()
+    atom.ctx.restore()
 
   drawPlant: (plant) ->
     ctx.save()
