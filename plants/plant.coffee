@@ -16,12 +16,20 @@ class Plant
     @duration = 360 # seconds - default - contains both birth and life, but not death
     @birth_duration = 90 # seconds
     @death_duration = 90 # seconds
+    @opacity = 1.0 # we start out fully opaque
+    @alive = true
+    
   update: (dt) ->
+    if @stage() == 'death'
+      @opacity = 1.0 - @stage_progress() 
+      @alive = false
+    
     @age += dt
   draw: ->
-    ctx = @atom.ctx
+    ctx = atom.ctx
     ctx.beginPath()
     ctx.fillColor = 'black'
+    
   stage: -> # returns current stage - 'birth', 'life', 'death'
     if @age > @duration
       'death'
