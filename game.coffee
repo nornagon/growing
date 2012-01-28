@@ -6,6 +6,12 @@ vary = (amt) -> 2 * amt * (Math.random() - 0.5)
 rand = (amt) -> amt * Math.random()
 randInt = (amt) -> Math.floor rand(amt)
 
+angleDist = (t,p) ->
+  dist = t - p
+  Math.min Math.abs(dist), Math.abs(dist + 2*Math.PI), Math.abs(dist - 2*Math.PI)
+
+lerp = (t, from, to) -> t * to + (1-t) * from
+
 randomPlanetColor = -> "hsl(#{128 + vary(6) - 3}, 52%, #{83 + vary(3)}%)"
 #randomPlanetColor = -> 'black'
 
@@ -21,13 +27,13 @@ v.rotate = (v1, v2) -> v(v1.x*v2.x - v1.y*v2.y, v1.x*v2.y + v1.y*v2.x)
 v.forangle = (a) ->	v(Math.cos(a), Math.sin(a))
 
 #polar2Cart = (r, angle) -> [r * Math.sin angle, r * Math.cos angle]
-cart2Polar = (v) -> [v.len(), atan2 v.x, v.y]
+cart2Polar = (v) -> [v.len(), Math.atan2(-v.x, v.y)]
 
 treePos2Polar = (angle, x, y) ->
   base = v(x, planetRadius + y)
-  cart2polar v.rotate(base, v.forangle angle)
+  cart2Polar v.rotate(base, v.forangle angle)
 
-plants = {BinaryBush}
+plants = {BinaryBush, Curlicure}
 
 planetRadius = 170
 planetWidth = 23
@@ -120,7 +126,7 @@ class Game extends atom.Game
     @backgroundPlanets = (new BackgroundPlanet(true) for [1..20])
     @particles = []
 
-    @backgroundHue = 138
+    @backgroundHue = randInt(360)
 
 
     @dudeLocation = Math.PI
@@ -130,16 +136,16 @@ class Game extends atom.Game
     @dudeHead = 25
     @dudeFeet = 5
     @dudeColor = 'white'
-    
     @plants = []
     
     # TODO: stop doing this next thing
-    @plants.push new BinaryBush(new Seed)
+    @plants.push new Curlicure(new Seed, 1)
     # Map from plant name -> list of seeds
+
     @playerSeeds =
       BinaryBush:[new Seed BinaryBush, 0, 0]
 
-    @selectedPlant = 'BinaryBush'
+    @selectedPlant = 'Curlicure'
     
     @groundSeeds = []
 
@@ -155,9 +161,12 @@ class Game extends atom.Game
     @particles.push p
     ###
 
-  addSeed: (type, angle, height) -> @groundSeeds.push new Seed type, angle, height
+  addSeed: (type, angle, height) ->
+    @groundSeeds.push new Seed type, angle, height
 
   update: (dt) ->
+    if atom.input.down 'fast-forward'
+      dt *= 15
     @dudeLocation += dt * @dudeSpeed
     @dudeLocation %= 2*Math.PI
     @dudeAngle += dt * 2
@@ -181,7 +190,7 @@ class Game extends atom.Game
 
     for seed in @groundSeeds
       seed.update(dt)
-      if seed.state is 'resting' and Math.abs(seed.angle - @dudeLocation) < 0.06
+      if seed.state is 'resting' and angleDist(seed.angle, @dudeLocation) < 0.06
         seed.collect()
         @playerSeeds[seed.type.name] ?= []
         @playerSeeds[seed.type.name].push seed
@@ -259,4 +268,5 @@ game = new Game()
 game.run()
 
 atom.input.bind atom.key.SPACE, 'hi'
+atom.input.bind atom.key.TAB, 'fast-forward'
 

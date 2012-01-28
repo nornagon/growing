@@ -88,6 +88,7 @@ class BinaryBush extends Plant
     ctx.fill()
     
 BinaryBush.seed =
-  hueOffset: 60
+  hue: 60
+  radius: 4
   germinationTime: 10
 
