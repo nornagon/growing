@@ -6,6 +6,8 @@ vary = (amt) -> 2 * amt * (Math.random() - 0.5)
 rand = (amt) -> amt * Math.random()
 randInt = (amt) -> Math.floor rand(amt)
 
+TAU = Math.PI * 2
+
 angleDist = (t,p) ->
   dist = t - p
   Math.min Math.abs(dist), Math.abs(dist + 2*Math.PI), Math.abs(dist - 2*Math.PI)
@@ -17,6 +19,11 @@ randomPlanetColor = -> "hsl(#{128 + vary(6) - 3}, 52%, #{83 + vary(3)}%)"
 
 sq = (x) -> x * x
 cube = (x) -> x * x * x
+
+dist = (v1, v2) ->
+  dx = v2.x-v1.x
+  dy = v2.y-v1.y
+  Math.sqrt dx*dx+dy*dy
 
 Vect = (@x, @y) ->
 Vect::len = -> Math.sqrt(sq(@x) + sq(@y))
@@ -32,6 +39,11 @@ cart2Polar = (v) -> [v.len(), Math.atan2(-v.x, v.y)]
 treePos2Polar = (angle, x, y) ->
   base = v(x, planetRadius + y)
   cart2Polar v.rotate(base, v.forangle angle)
+
+treePos2Canvas = (angle, x, y) ->
+  base = v(x, planetRadius + 10 + y)
+  rot = v.rotate(base, v.forangle angle)
+  v(rot.x + 400, rot.y + 300)
 
 plants = {BinaryBush, Curlicure}
 
@@ -153,6 +165,10 @@ class Game extends atom.Game
     
     @radialSelector = new RadialSelector
 
+    @minerals = new Nutrients
+    @water = new Nutrients
+    @water.color = 'hsla(193,74%,88%,0.4)'
+
     ###
     p = new Particle()
     p.x = 400
@@ -173,6 +189,9 @@ class Game extends atom.Game
     @dudeAngle %= 2*Math.PI
 
     p.update(dt) for p in @backgroundPlanets
+
+    @minerals.update dt
+    @water.update dt
 
     now = Date.now()
     i = 0
@@ -243,12 +262,19 @@ class Game extends atom.Game
     p.draw(@backgroundHue) for p in @backgroundPlanets
 
   drawPlanet: ->
+    ctx.save()
+    ctx.translate 400, 300
+    @minerals.draw()
+    @water.draw()
+
     ctx.beginPath()
     ctx.lineWidth = planetWidth
-    ctx.arc 400, 300, planetRadius, 0, 2*Math.PI, false
+    ctx.arc 0, 0, planetRadius, 0, 2*Math.PI, false
 
     ctx.strokeStyle = 'black'
     ctx.stroke()
+
+    ctx.restore()
 
   drawDude: ->
     ctx.save()
@@ -269,4 +295,4 @@ game.run()
 
 atom.input.bind atom.key.SPACE, 'hi'
 atom.input.bind atom.key.TAB, 'fast-forward'
-
+atom.input.bind atom.button.LEFT, 'grab'
