@@ -1,6 +1,6 @@
 class RadialSelector
   constructor: ->
-    @seed_store = [{ kind: 'red', quantity: 80 }, { kind: 'green', quantity: 2 }, { kind: 'purple', quantity: 5 }]
+    @seed_store = [{ kind: 'red', quantity: 80 }, { kind: 'green', quantity: 2 }, { kind: 'purple', quantity: 5 }] # , { kind: 'yellow', quantity: 3 }]
     @selector_image = new Image
     @selector_image.src = 'assets/selector.png'
     
@@ -14,18 +14,34 @@ class RadialSelector
     
     unless success
       @seed_store.push({ kind: seed_kind, quantity: adjustment })
+    
+  # get current seed kind and quantity  
+  selection: ->
+    @seed_store[@selected_index] if @selected_index?
   
+  # get a list of available seed kinds
+  available_seeds: ->
+    seed.kind for seed in @seed_store
+    
+  # update state with mouse information
   update: ->
     @selected_index = 0;
+    
+    @square_distance ?= (x, y) ->
+      (x * x) + (y * y)
     
     # calculate which seed type is pointing towards the cursor
     y_offset = atom.canvas.height / 2 - atom.input.mouse.y
     x_offset = atom.input.mouse.x - atom.canvas.width / 2
     
-    angle = Math.atan2(y_offset, x_offset) / Math.PI * 180 + 180
-    angle = ((angle + 360 - (360 / (@seed_store.length * 4))) % 360)
-    @selected_index = Math.floor((360-angle) / (360 / @seed_store.length)); # selects the index closest to the mouse pointer
     
+    @selected_index = if @square_distance(x_offset, y_offset) < @square_distance(planetRadius - planetWidth/2, 0)
+      angle = Math.atan2(y_offset, x_offset) / Math.PI * 180 + 180
+      angle = ((angle + 360 - (360 / (@seed_store.length * 4))) % 360)
+      angle -= 90
+      Math.floor((360-angle) / (360 / @seed_store.length)) % @seed_store.length; # selects the index closest to the mouse pointer
+    
+  # draw interface to canvas
   draw: ->
     tao = Math.PI * 2
     
@@ -38,18 +54,18 @@ class RadialSelector
       @draw_seed_row item.kind, item.quantity # TODO: kind should lookup seed object and fetch it's colour
       ctx.restore()
       
-    ctx.save()
-    ctx.rotate deg(@selected_index * (360 / -@seed_store.length))
-    ctx.rotate deg(180 - 30)
-    ctx.drawImage(@selector_image, -5, -92/2)
-    ctx.restore()
+    if @selected_index?
+      ctx.save()
+      ctx.rotate deg(@selected_index * (360 / -@seed_store.length))
+      ctx.rotate deg(-90)
+      ctx.drawImage(@selector_image, -7, -45)
+      ctx.restore()
     
     
   draw_seed_row: (color, quantity) ->
-    avg_spacing = 10 #px
-    mid_range_radius = 130 #px
-    max_dots = 9
-    offset_from_center = 20
+    mid_range_radius = 120 #px
+    max_dots = 8
+    offset_from_center = 30
     computed_position = (avatar_num) -> offset_from_center + Math.atan(avatar_num / 5) * mid_range_radius
     computed_radius = (avatar_num) -> Math.exp(-1.5 * (avatar_num / max_dots)) * 6
     
