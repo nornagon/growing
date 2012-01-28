@@ -112,7 +112,7 @@ class Game extends atom.Game
     
     @plants = [
       @plant = new CircuitTree
-      @other_plant = new BinaryBush
+      @other_plant = new BinaryBush(new Seed)
     ]
 
     # Map from plant name -> number

@@ -20,3 +20,7 @@ class Seed
 
   update: (dt) ->
     @height = Math.max(0, @height - dt * fallSpeed)
+  
+  grow: -> # construct and return a plant
+    new @type(this)
+    
