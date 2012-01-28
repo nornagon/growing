@@ -158,7 +158,8 @@ class Game extends atom.Game
   addSeed: (type, angle, height) -> @groundSeeds.push new Seed type, angle, height
 
   update: (dt) ->
-    #dt *= 5
+    if atom.input.down 'fast-forward'
+      dt *= 15
     @dudeLocation += dt * @dudeSpeed
     @dudeLocation %= 2*Math.PI
     @dudeAngle += dt * 2
@@ -253,4 +254,5 @@ game = new Game()
 game.run()
 
 atom.input.bind atom.key.SPACE, 'hi'
+atom.input.bind atom.key.TAB, 'fast-forward'
 
