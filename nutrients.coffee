@@ -20,6 +20,8 @@ class Nutrients
         @buckets[i] -= amt
         @buckets[@right i] += amt
 
+  bucketForAngle: (angle) ->
+    Math.round((angle + TAU/4) / TAU * @buckets.length) % @buckets.length
   total: ->
     @buckets.reduce (m,o) -> m+o
   draw: ->
