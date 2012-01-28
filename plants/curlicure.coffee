@@ -44,7 +44,7 @@ class Curlicure extends Plant
           x = @age/@maxAge
           #(1-(x-1)*(x-1))*@maxAge
           (Math.sqrt(Math.sin(x*Math.PI/2)))*@maxAge
-        growthRate: 2.5 + vary(0.1)
+        growthRate: 0.5 + vary(0.1)
         maxAge: 25 + vary(5)
         posX: vary(16)
         width: 0.3 + vary(0.3)
@@ -52,11 +52,15 @@ class Curlicure extends Plant
       }
 
   update: (dt) ->
+    super dt
+    console.log @stage(), @age
     for c in @components
       if c.age < c.maxAge
         c.age = Math.min c.maxAge, c.age + c.growthRate * dt
-      if !c.seed? and c.age > c.maxAge * 0.8 and Math.random() < 0.1*dt
-        c.seed = 0.1
+      if @stage() == 'life' and !c.seed? and c.age > c.maxAge * 0.8 and Math.random() < 0.1*dt
+        c.seed = -rand(10)
+      if @stage() == 'death' and c.seed < 0
+        c.seed = undefined
       if c.seed? and c.seed < 2
         c.seed += 0.5 * dt
       if c.seed >= 2 and Math.random() < 0.1*dt
@@ -65,7 +69,7 @@ class Curlicure extends Plant
         [d, theta] = treePos2Polar @angle, c.posX + endPoint.x, endPoint.y
         console.log @angle, c.posX, endPoint.x, endPoint.y
         game.addSeed Curlicure, theta, d-planetRadius
-        c.seed = -1
+        c.seed = -20*rand(10)
   draw: ->
     ctx = atom.ctx
     for c in @components
@@ -75,6 +79,7 @@ class Curlicure extends Plant
   drawComponent: (c) ->
     ctx = atom.ctx
     ctx.save()
+    ctx.globalAlpha = @opacity
     ctx.translate c.posX, 0
     age = c.stage()
     samples = Math.floor(age)

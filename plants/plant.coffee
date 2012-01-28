@@ -13,15 +13,15 @@
 class Plant
   constructor: (@seed, @angle) ->
     @age = 0
-    @duration = 360 # seconds - default - contains both birth and life, but not death
-    @birth_duration = 90 # seconds
-    @death_duration = 90 # seconds
+    @duration = 180 # seconds - default - contains both birth and life, but not death
+    @birth_duration = 45 # seconds
+    @death_duration = 60 # seconds
     @opacity = 1.0 # we start out fully opaque
     @alive = true
     
   update: (dt) ->
     if @stage() == 'death'
-      @opacity = 1.0 - @stage_progress() 
+      @opacity = Math.max 0, 1.0 - @stage_progress()
       @alive = false
     
     @age += dt
@@ -45,6 +45,6 @@ class Plant
     else if stage == 'life'
       (@age - @birth_duration) / (@duration - @birth_duration)
     else if stage == 'death'
-      @age - @duration / @death_duration
+      (@age - @duration) / @death_duration
     
     

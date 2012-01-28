@@ -1,5 +1,5 @@
 fallSpeed = 10
-groundHeight = 2
+groundHeight = 1
 
 class Seed
   constructor: (@type, @angle, @height) ->
@@ -11,7 +11,7 @@ class Seed
     #new @type
     #@type.seed.color
 
-  color: -> "hsla(#{@type.seed.hue},54%,79%,#{@alpha})"
+  color: -> "hsla(#{@type.seed.hue},54%,68%,#{@alpha})"
 
   draw: ->
     return if @state is 'done'
