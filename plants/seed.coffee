@@ -41,7 +41,8 @@ class Seed
             @state = 'resting'
           else
             @state = 'germination'
-            @gtime = @type.seed.germinationTime
+            g = @type.seed.germinationTime
+            @gtime = g/2 * rand(g)
 
       when 'germination'
         @gtime -= dt

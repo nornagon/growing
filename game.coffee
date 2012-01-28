@@ -10,6 +10,7 @@ randomPlanetColor = -> "hsl(#{128 + vary(6) - 3}, 52%, #{83 + vary(3)}%)"
 #randomPlanetColor = -> 'black'
 
 sq = (x) -> x * x
+cube = (x) -> x * x * x
 
 plants = {BinaryBush}
 
@@ -22,22 +23,22 @@ avatar.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0
 class Particle
   constructor: ->
     @x = @y = @vx = @vy = @radius = 0
-    @start = Date.now()
     @radius = 10
-    @end = @start + 10 * 1000
+    # Seconds remaining before the particle fades completely
+    @lifeRemaining = @life = 10
     @fuzzy = 1000
 
-  alpha: (time) ->
-    dist = @end - @start
-    return 0 if time >= @end
+  alpha: ->
+    return 0 if @lifeRemaining <= 0
     
-    Math.sin ((time - @start) / dist * Math.PI)
+    Math.sqrt(Math.sin (@lifeRemaining / @life * Math.PI))
 
-  color: -> "rgba(0,0,0,#{@alpha(Date.now())})"
+  color: -> "rgba(0,0,0,#{@alpha()})"
 
   update: (dt) ->
     @x += dt * @vx
     @y += dt * @vy
+    @lifeRemaining -= dt
 
   draw: ->
     ctx.beginPath()
@@ -57,26 +58,26 @@ class BackgroundPlanet extends Particle
   init: (isStart) ->
     @x = Math.random() * 800
     @y = Math.random() * 600
-    @radius = sq(rand 13)
+    @radius = cube(rand 5)
     @vx = vary(5)
     @vy = vary(5)
-    @start = Date.now()
-    @start -= randInt(30 * 1000) if isStart
-    @end = Date.now() + 20 * 1000 + randInt(30 * 1000)
+    @lifeRemaining = @life = 20 + rand(30)
+    @lifeRemaining = rand(@lifeRemaining) if isStart
+    #@life += randInt(30) if isStart
 
     @h = vary(6)
     @s = 54 + vary(4)
-    @l = 79 + vary(5)
+    @l = 79 + vary(8)
 
   constructor: (isStart) ->
     super()
     @init isStart
 
-  color: (hue, time, amul=1) -> "hsla(#{hue},#{@s}%,#{@l}%,#{amul * @alpha time})"
+  color: (hue, amul=1) -> "hsla(#{hue},#{@s}%,#{@l}%,#{Math.floor(100 * amul * @alpha())/100})"
 
   update: (dt) ->
     super(dt)
-    @init() if Date.now() > @end
+    @init() if @lifeRemaining <= 0
 
   draw: (bgHue) ->
     ctx.beginPath()
@@ -84,9 +85,9 @@ class BackgroundPlanet extends Particle
     hue = @h + bgHue
 
     g = ctx.createRadialGradient @x, @y, @radius * 0.9, @x, @y, @radius
-    color = @color hue, Date.now()
+    color = @color hue
     g.addColorStop 0, color
-    g.addColorStop 1, @color hue, Date.now(), 0
+    g.addColorStop 1, @color hue, 0
     ctx.fillStyle = g
     ctx.fill()
 
@@ -97,7 +98,7 @@ class Game extends atom.Game
     canvas.width = 800
     canvas.height = 600
 
-    @backgroundPlanets = (new BackgroundPlanet(true) for [1..15])
+    @backgroundPlanets = (new BackgroundPlanet(true) for [1..20])
     @particles = []
 
     @backgroundHue = 138
@@ -116,14 +117,14 @@ class Game extends atom.Game
     # TODO: stop doing this next thing
     @plants.push new BinaryBush(new Seed)
     # Map from plant name -> list of seeds
-    @playerSeeds = {}
-#      BinaryBush:[new Seed BinaryBush, 0, 0]
+    @playerSeeds =
+      BinaryBush:[new Seed BinaryBush, 0, 0]
 
     @selectedPlant = 'BinaryBush'
     
     @groundSeeds = []
 
-    @addSeed BinaryBush, 0, 40
+    @addSeed BinaryBush, 5, 40
 
     ###
     p = new Particle()
@@ -149,7 +150,7 @@ class Game extends atom.Game
     while i < @particles.length
       p = @particles[i]
       p.update(dt)
-      if p.end <= now
+      if p.lifeRemaining <= 0
         @particles[p] = @particles[@particles.length - 1]
         @particles.length--
       else

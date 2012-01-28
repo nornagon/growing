@@ -71,5 +71,5 @@ class BinaryBush extends Plant
     
 BinaryBush.seed =
   hueOffset: 60
-  germinationTime: 4
+  germinationTime: 10
 
