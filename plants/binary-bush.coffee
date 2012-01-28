@@ -2,7 +2,9 @@ class BinaryBush extends Plant
   constructor: (seed, angle) ->
     super seed, angle
     @depth = 7
-    @duration = 10 # seconds
+    @birth_duration = 10 # DEBUG
+    @duration = 20 # seconds
+    @death_duration = 10
     @tau = Math.PI * 2
     @fruit_radius = 3
     
@@ -10,7 +12,7 @@ class BinaryBush extends Plant
     
   update: (dt) ->
     super dt
-    @current_depth = @depth * (1 + Math.sin((@stage_progress() * @tau) - Math.PI / 2)) / 2 if @stage() == 'birth'
+    @current_depth = @depth * (1 + Math.sin((@stage_progress() * Math.PI) - Math.PI / 2)) / 2 if @stage() == 'birth'
     
   draw: ->
     
