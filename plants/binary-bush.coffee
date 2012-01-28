@@ -6,9 +6,12 @@ class BinaryBush extends Plant
     @duration = 20 # seconds
     @death_duration = 10
     @tau = Math.PI * 2
-    @fruit_radius = 3
+    @fruit_radius = 1.5
     
     @randoms = (@natural_random() for x in [0..@depth * 10])
+    @fruits = []
+    @fruit_idx = 0
+    @fertility = 0.1 # probability of a fruit on any branch
     
   update: (dt) ->
     super dt
@@ -16,6 +19,7 @@ class BinaryBush extends Plant
     
   draw: ->
     
+    @fruit_idx = 0
     atom.ctx.save()
     @next_random.idx = 0 # reset random lookup function back to how it was last time we drew..
     @drawBranch(@current_depth, 0) if @age < @duration
@@ -71,6 +75,11 @@ class BinaryBush extends Plant
       ctx.restore()
     
   drawFruit: (cycle)->
+    # randomly control if berries appear here
+    this_idx = @fruit_idx++
+    @fruits[@fruit_idx] ?= Math.random() <= @fertility
+    return unless @fruits[@fruit_idx]
+    
     ctx = atom.ctx
     ctx.fillStyle = 'red'
     ctx.beginPath()
