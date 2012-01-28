@@ -157,7 +157,11 @@ class Game extends atom.Game
 
     i.update(dt) for i in @plants
 
-    seed.update(dt) for seed in @groundSeeds
+    for seed in @groundSeeds
+      seed.update(dt)
+      if seed.state is 'resting' and Math.abs(seed.angle - @dudeLocation) < 0.06
+        seed.collect()
+
     @backgroundHue += 1*dt
     #@plant.update dt
 
@@ -213,7 +217,7 @@ class Game extends atom.Game
     ctx.translate(400, 300)
     ctx.rotate @dudeLocation
     ctx.translate planetRadius + planetWidth/2 + 15 + Math.sin(@dudeAngle) * 2, 0
-    #ctx.rotate @dudeAngle
+    ctx.rotate @dudeLocation * 1.4
 
     ctx.drawImage avatar, -16, -16
 
