@@ -12,6 +12,21 @@ randomPlanetColor = -> "hsl(#{128 + vary(6) - 3}, 52%, #{83 + vary(3)}%)"
 sq = (x) -> x * x
 cube = (x) -> x * x * x
 
+Vect = (@x, @y) ->
+Vect::len = -> Math.sqrt(sq(@x) + sq(@y))
+
+v = (x,y) -> new Vect x, y
+
+v.rotate = (v1, v2) -> v(v1.x*v2.x - v1.y*v2.y, v1.x*v2.y + v1.y*v2.x)
+v.forangle = (a) ->	v(Math.cos(a), Math.sin(a))
+
+#polar2Cart = (r, angle) -> [r * Math.sin angle, r * Math.cos angle]
+cart2Polar = (v) -> [v.len(), atan2 v.x, v.y]
+
+treePos2Polar = (angle, x, y) ->
+  base = v(x, planetRadius + y)
+  cart2polar v.rotate(base, v.forangle angle)
+
 plants = {BinaryBush}
 
 planetRadius = 170
@@ -61,8 +76,12 @@ class BackgroundPlanet extends Particle
     @radius = cube(rand 5)
     @vx = vary(5)
     @vy = vary(5)
+    oldLifeRemaining = @lifeRemaining
     @lifeRemaining = @life = 20 + rand(30)
-    @lifeRemaining = rand(@lifeRemaining) if isStart
+    if isStart
+      @lifeRemaining = rand(@lifeRemaining) if isStart
+    else
+      @lifeRemaining += oldLifeRemaining
     #@life += randInt(30) if isStart
 
     @h = vary(6)
