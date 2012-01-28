@@ -23,11 +23,11 @@ v.rotate = (v1, v2) -> v(v1.x*v2.x - v1.y*v2.y, v1.x*v2.y + v1.y*v2.x)
 v.forangle = (a) ->	v(Math.cos(a), Math.sin(a))
 
 #polar2Cart = (r, angle) -> [r * Math.sin angle, r * Math.cos angle]
-cart2Polar = (v) -> [v.len(), atan2 v.x, v.y]
+cart2Polar = (v) -> [v.len(), Math.atan2(-v.x, v.y)]
 
 treePos2Polar = (angle, x, y) ->
   base = v(x, planetRadius + y)
-  cart2polar v.rotate(base, v.forangle angle)
+  cart2Polar v.rotate(base, v.forangle angle)
 
 plants = {BinaryBush, Curlicure}
 
@@ -135,13 +135,13 @@ class Game extends atom.Game
     @plants = []
     
     # TODO: stop doing this next thing
-    @plants.push new Curlicure(new Seed)
+    @plants.push new Curlicure(new Seed, 1)
     # Map from plant name -> list of seeds
 
     @playerSeeds =
       BinaryBush:[new Seed BinaryBush, 0, 0]
 
-    @selectedPlant = 'BinaryBush'
+    @selectedPlant = 'Curlicure'
     
     @groundSeeds = []
 
@@ -158,6 +158,7 @@ class Game extends atom.Game
   addSeed: (type, angle, height) -> @groundSeeds.push new Seed type, angle, height
 
   update: (dt) ->
+    #dt *= 5
     @dudeLocation += dt * @dudeSpeed
     @dudeLocation %= 2*Math.PI
     @dudeAngle += dt * 2
