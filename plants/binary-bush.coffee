@@ -13,6 +13,9 @@ class BinaryBush extends Plant
     @current_depth = @depth * (1 + Math.sin((@age / @duration * @tau) - Math.PI / 2)) / 2
     
   draw: ->
+    stage = @stage()
+    if stage == 'birth'
+      
     @next_random.idx = 0; # reset random lookup function back to how it was last time we drew..
     @drawBranch(@current_depth, 0) if @age < @duration
     
