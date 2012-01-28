@@ -1,6 +1,6 @@
 class BinaryBush extends Plant
-  constructor: (seed) ->
-    super seed
+  constructor: (seed, angle) ->
+    super seed, angle
     @depth = 7
     @duration = 10 # seconds
     @tau = Math.PI * 2
@@ -21,7 +21,7 @@ class BinaryBush extends Plant
     @randoms[@next_random.idx % @randoms.length]
     
   natural_random: ->
-    (Math.random() + Math.random() + Math.random()) / (3 / 2) - (3 / 2)
+    (1.5 - (Math.random() + Math.random() + Math.random())) / 1.5
     
   drawBranch: (depth) ->
     # draws a single branch, then branches again, until depth is exhausted
@@ -51,13 +51,13 @@ class BinaryBush extends Plant
     else
       ctx.save();
       ctx.translate 0, branch_length
-      ctx.rotate(@tau / 8 - @next_random())
+      ctx.rotate(@tau / 8 - @next_random() / 2)
       @drawBranch depth - 1
       ctx.restore();
   
       ctx.save();
       ctx.translate 0, branch_length
-      ctx.rotate(-((@tau / 8) + @next_random()))
+      ctx.rotate(-((@tau / 8) + @next_random() / 2))
       @drawBranch depth - 1
       ctx.restore()
     
@@ -70,6 +70,6 @@ class BinaryBush extends Plant
     ctx.fill()
     
 BinaryBush.seed =
-  color: 'red'
-  name: 'binary'
+  hueOffset: 60
+  germinationTime: 4
 

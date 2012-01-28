@@ -11,13 +11,13 @@
 #  - time - current time in seconds - basically; e.g. (Date.now() / 1000)
 
 class Plant
-  constructor: (@seed) ->
+  constructor: (@seed, @angle) ->
     @age = 0
   update: (dt) ->
     @age += dt
   draw: ->
     ctx = @atom.ctx
-    ctx.beginPath();
+    ctx.beginPath()
     ctx.fillColor = 'black'
     
     
