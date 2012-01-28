@@ -53,7 +53,6 @@ class Curlicure extends Plant
 
   update: (dt) ->
     super dt
-    console.log @stage(), @age
     for c in @components
       if c.age < c.maxAge
         c.age = Math.min c.maxAge, c.age + c.growthRate * dt
@@ -67,7 +66,6 @@ class Curlicure extends Plant
         age = c.stage()/c.maxAge
         endPoint = c.curl.pointAt age, age
         [d, theta] = treePos2Polar @angle, c.posX + endPoint.x, endPoint.y
-        console.log @angle, c.posX, endPoint.x, endPoint.y
         game.addSeed Curlicure, theta, d-planetRadius
         c.seed = -20*rand(10)
   draw: ->

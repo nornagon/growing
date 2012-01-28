@@ -6,6 +6,10 @@ vary = (amt) -> 2 * amt * (Math.random() - 0.5)
 rand = (amt) -> amt * Math.random()
 randInt = (amt) -> Math.floor rand(amt)
 
+angleDist = (t,p) ->
+  dist = t - p
+  Math.min Math.abs(dist), Math.abs(dist + 2*Math.PI), Math.abs(dist - 2*Math.PI)
+
 lerp = (t, from, to) -> t * to + (1-t) * from
 
 randomPlanetColor = -> "hsl(#{128 + vary(6) - 3}, 52%, #{83 + vary(3)}%)"
@@ -155,7 +159,8 @@ class Game extends atom.Game
     @particles.push p
     ###
 
-  addSeed: (type, angle, height) -> @groundSeeds.push new Seed type, angle, height
+  addSeed: (type, angle, height) ->
+    @groundSeeds.push new Seed type, angle, height
 
   update: (dt) ->
     if atom.input.down 'fast-forward'
@@ -183,7 +188,7 @@ class Game extends atom.Game
 
     for seed in @groundSeeds
       seed.update(dt)
-      if seed.state is 'resting' and Math.abs(seed.angle - @dudeLocation) < 0.06
+      if seed.state is 'resting' and angleDist(seed.angle, @dudeLocation) < 0.06
         seed.collect()
         @playerSeeds[seed.type.name] ?= []
         @playerSeeds[seed.type.name].push seed
