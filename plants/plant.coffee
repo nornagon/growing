@@ -17,9 +17,13 @@ class Plant
     @birth_duration = 90 # seconds
     @death_duration = 90 # seconds
     @opacity = 1.0 # we start out fully opaque
+    @alive = true
     
   update: (dt) ->
-    @opacity = 1.0 - @stage_progress() if @stage() == 'death'
+    if @stage() == 'death'
+      @opacity = 1.0 - @stage_progress() 
+      @alive = false
+    
     @age += dt
   draw: ->
     ctx = atom.ctx
