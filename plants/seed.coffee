@@ -1,4 +1,3 @@
-seedRadius = 4
 fallSpeed = 10
 groundHeight = 2
 
@@ -12,7 +11,7 @@ class Seed
     #new @type
     #@type.seed.color
 
-  color: -> "hsla(#{@type.seed.hueOffset},54%,79%,#{@alpha})"
+  color: -> "hsla(#{@type.seed.hue},54%,79%,#{@alpha})"
 
   draw: ->
     return if @state is 'done'
@@ -21,7 +20,7 @@ class Seed
     ctx.translate 400, 300
     ctx.rotate @angle
     ctx.beginPath()
-    ctx.arc 0, planetRadius + planetWidth / 2 + @height, seedRadius, 0, 2*Math.PI, false
+    ctx.arc 0, planetRadius + planetWidth / 2 + @height, @type.seed.radius, 0, 2*Math.PI, false
     ctx.fillStyle = @color()
     ctx.fill()
 

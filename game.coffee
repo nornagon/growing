@@ -6,6 +6,8 @@ vary = (amt) -> 2 * amt * (Math.random() - 0.5)
 rand = (amt) -> amt * Math.random()
 randInt = (amt) -> Math.floor rand(amt)
 
+lerp = (t, from, to) -> t * to + (1-t) * from
+
 randomPlanetColor = -> "hsl(#{128 + vary(6) - 3}, 52%, #{83 + vary(3)}%)"
 #randomPlanetColor = -> 'black'
 
@@ -27,7 +29,7 @@ treePos2Polar = (angle, x, y) ->
   base = v(x, planetRadius + y)
   cart2polar v.rotate(base, v.forangle angle)
 
-plants = {BinaryBush}
+plants = {BinaryBush, Curlicure}
 
 planetRadius = 170
 planetWidth = 23
@@ -120,7 +122,7 @@ class Game extends atom.Game
     @backgroundPlanets = (new BackgroundPlanet(true) for [1..20])
     @particles = []
 
-    @backgroundHue = 138
+    @backgroundHue = randInt(360)
 
 
     @dudeLocation = Math.PI
@@ -130,12 +132,12 @@ class Game extends atom.Game
     @dudeHead = 25
     @dudeFeet = 5
     @dudeColor = 'white'
-    
     @plants = []
     
     # TODO: stop doing this next thing
-    @plants.push new BinaryBush(new Seed)
+    @plants.push new Curlicure(new Seed)
     # Map from plant name -> list of seeds
+
     @playerSeeds =
       BinaryBush:[new Seed BinaryBush, 0, 0]
 
